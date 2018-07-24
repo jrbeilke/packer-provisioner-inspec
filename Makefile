@@ -1,15 +1,13 @@
 default: build
 
 prepare:
-	go get github.com/tools/godep
-	godep restore
 	go get ./...
 
 test: prepare
 	go test ./...
 
 fmt:
-	go fmt . ./packer-provisioner-inspec
+	go fmt .
 
 build: fmt test
 	go build -v

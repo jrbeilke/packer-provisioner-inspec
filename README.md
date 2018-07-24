@@ -3,6 +3,8 @@ Packer InSpec Provisioner
 
 [![Build Status](http://img.shields.io/travis/jrbeilke/packer-provisioner-inspec.svg)][travis]
 
+[travis]: https://travis-ci.org/jrbeilke/packer-provisioner-inspec
+
 packer-provisioner-inspec is a [Packer](https://packer.io/) plugin that
 tests machines during provisioning using [InSpec](https://www.inspec.io/docs/).
 

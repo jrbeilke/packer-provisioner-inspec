@@ -17,7 +17,7 @@ jobs:
       script: "make release"
 stages:
   - name: release
-    if: branch = master AND tag = true
+    if: tag = true
 
 deploy:
   provider: releases
@@ -28,6 +28,5 @@ deploy:
   file: "releases/packer-provisioner-inspec*.zip"
   on:
     repo: jrbeilke/packer-provisioner-inspec
-    branch: master
     tags: true
     condition: $DEPLOY = true

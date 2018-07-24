@@ -1,8 +1,8 @@
 language: go
 
 go:
-  - "1.9.x"
   - "1.10.x"
+  - "1.9.x"
   - master
 
 jobs:
@@ -10,15 +10,12 @@ jobs:
   allow_failures:
     - go: master
   include:
-    - stage: build
-      script: "make build"
     - stage: release
       go: "1.10.x"
       env:
         - DEPLOY=true
       script: "make release"
 stages:
-  - build
   - name: release
     if: branch = master AND tag = true
 

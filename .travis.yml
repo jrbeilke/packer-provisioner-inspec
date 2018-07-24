@@ -12,8 +12,6 @@ jobs:
   include:
     - stage: release
       go: "1.10.x"
-      env:
-        - DEPLOY=true
       script: "make release"
 stages:
   - name: release
@@ -29,4 +27,3 @@ deploy:
   on:
     repo: jrbeilke/packer-provisioner-inspec
     tags: true
-    condition: $DEPLOY = true

@@ -1,0 +1,33 @@
+language: go
+
+go:
+  - "1.10.x"
+  - "1.9.x"
+  - master
+
+jobs:
+  fast_finish: true
+  allow_failures:
+    - go: master
+  include:
+    - stage: release
+      go: "1.10.x"
+      env:
+        - DEPLOY=true
+      script: "make release"
+stages:
+  - name: release
+    if: branch = master AND tag = true
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: Ko/m4A/JJULu30rzDlb4ofGAHYeh7DbIYWlUhVGw54xSHirPN2PSekWWQWwQR/uTfQEOdXdAVKkcC+BkAz2TkysSXYOtOVdYToQLsoZeRHb753k8mz2YVlzuu2yEAjRMPuzqjpSsoay264EwBdDf3gQbUskotPac9lnxHMvGWKDiZKhEAJJmTxNxsndkzDhobRQd5Ky7VMN6ljxZenKclLOp8qY6VfByqPfeku5+m2PnDTFxTNUg4GYM8yyPUZLiJsZBRMLwCmwTUuBU/TK88HrvoQEbqyXQWtgwG5F+VjCWLUYyJ0bXTX1w4rMbAOUfcM8IZ3IGS1EpZwlon7Z9hie77L7CQhXFjB1kC041qr+ZNgsqUmf30UR/5P0eCB/K3A7q9raqYdxp6em+i0NtpA63bisS4F+SDp3jYqKcOVqeoX3+AEOswPYZyBsJjmjnNu1KzGOaK3d8RqTV8taoW0dLMgkS+SE8xnO3ZBVvaa5GaEVOfaveKnnlRJ216gSUKYK8Hin09AtRnl0H57LhKYr+TGRYHEZtmA9Edjs/FgdqHXxnPr9v1BFK447ze33y0jGT3H3NtE1Rz0tCC3zX8PrDyfnxtSrt0ZxYjFp3adczVVnUoTAWqXiyR4zAOlcl4n8wWMv0alXua4GD8urBhUnRCheU5jVMv0SvoynBKIc=
+  file_glob: true
+  file: "releases/packer-provisioner-inspec*.zip"
+  on:
+    repo: jrbeilke/packer-provisioner-inspec
+    branch: master
+    tags: true
+    condition: $DEPLOY = true

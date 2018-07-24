@@ -1,6 +1,8 @@
 Packer InSpec Provisioner
 =======
 
+[![Build Status](http://img.shields.io/travis/jrbeilke/packer-provisioner-inspec.svg)][travis]
+
 packer-provisioner-inspec is a [Packer](https://packer.io/) plugin that
 tests machines during provisioning using [InSpec](https://www.inspec.io/docs/).
 
@@ -9,10 +11,7 @@ Install
 
 Build and install the plugin (you'll need ```git``` and ```go```):
 ````Shell
-go get -d github.com/jrbeilke/packer-provisioner-inspec
-cd $GOPATH/src/github.com/jrbeilke/packer-provisioner-inspec
-mkdir $HOME/.packer.d/plugins
-go build -o $HOME/.packer.d/plugins/packer-provisioner-inspec
+make install
 ````
 
 Usage

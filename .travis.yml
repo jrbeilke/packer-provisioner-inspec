@@ -10,7 +10,11 @@ jobs:
   allow_failures:
     - go: master
   include:
+    - stage: test
+      script: "make test"
     - stage: release
+      if: tag = true
+      go: "1.10.x"
       script: "make release"
       deploy:
         provider: releases
@@ -22,8 +26,3 @@ jobs:
         on:
           repo: jrbeilke/packer-provisioner-inspec
           tags: true
-
-stages:
-  - test
-  - name: release
-    if: tag = true

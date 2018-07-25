@@ -123,6 +123,18 @@ func TestProvisionerPrepare_TestFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("err: %s", err)
 	}
+
+	test_dir, err := ioutil.TempDir("", "example")
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+	defer os.Remove(test_dir)
+
+	config["test_path"] = test_dir
+	err = p.Prepare(config)
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
 }
 
 func TestProvisionerPrepare_HostKeyFile(t *testing.T) {

@@ -13,8 +13,6 @@ jobs:
     - go: master
   include:
     - stage: release
-      if: tag = true
-      go: "1.10.x"
       script: "make release"
       deploy:
         provider: releases

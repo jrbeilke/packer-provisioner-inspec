@@ -87,7 +87,7 @@ func (p *Provisioner) Prepare(raws ...interface{}) error {
 	}
 
 	var errs *packer.MultiError
-	err = validateFileConfig(p.config.TestPath, "test_path", true)
+	err = validateTestPathConfig(p.config.TestPath)
 	if err != nil {
 		errs = packer.MultiErrorAppend(errs, err)
 	}
@@ -345,6 +345,14 @@ func validateFileConfig(name string, config string, req bool) error {
 		return fmt.Errorf("%s: %s is invalid: %s", config, name, err)
 	} else if info.IsDir() {
 		return fmt.Errorf("%s: %s must point to a file", config, name)
+	}
+	return nil
+}
+
+func validateTestPathConfig(name string) error {
+	_, err := os.Stat(name)
+	if os.IsNotExist(err) {
+		return fmt.Errorf("test_path: %s does not exist: %s", name, err)
 	}
 	return nil
 }

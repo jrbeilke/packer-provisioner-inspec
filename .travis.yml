@@ -22,3 +22,8 @@ jobs:
         on:
           repo: jrbeilke/packer-provisioner-inspec
           tags: true
+
+stages:
+  - test
+  - release
+    if: tag = true

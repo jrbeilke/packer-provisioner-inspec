@@ -48,6 +48,7 @@ required parameters
 optional parameters
 ------
 
+- `extra_arguments` (array of strings) - An array of extra arguments to pass to the inspec command. By default, this is empty. These arguments will be passed through a shell and arguments should be quoted accordingly. Usage example: `"extra_arguments": ["--sudo", "--no-distinct-exit"]`
 - `local_port` (string) - The port on which inspec-provisioner should first
   attempt to listen for SSH connections. This value is a starting point.
 	inspec-provisioner will attempt listen for SSH connections on the first

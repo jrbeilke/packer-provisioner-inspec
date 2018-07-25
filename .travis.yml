@@ -5,13 +5,13 @@ go:
   - "1.9.x"
   - master
 
+script: "make test"
+
 jobs:
   fast_finish: true
   allow_failures:
     - go: master
   include:
-    - stage: test
-      script: "make test"
     - stage: release
       if: tag = true
       go: "1.10.x"

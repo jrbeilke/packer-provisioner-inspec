@@ -25,5 +25,5 @@ jobs:
 
 stages:
   - test
-  - release
+  - name: release
     if: tag = true

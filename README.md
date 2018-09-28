@@ -1,7 +1,7 @@
 Packer InSpec Provisioner
 =======
 
-[![Build Status](http://img.shields.io/travis/jrbeilke/packer-provisioner-inspec.svg)][travis]
+[![Build Status](https://img.shields.io/travis/jrbeilke/packer-provisioner-inspec/master.svg)][travis]
 
 [travis]: https://travis-ci.org/jrbeilke/packer-provisioner-inspec
 

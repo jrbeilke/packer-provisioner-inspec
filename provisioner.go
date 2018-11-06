@@ -44,7 +44,7 @@ type Config struct {
 
 	// The main test path to execute.
 	TestPath             string   `mapstructure:"test_path"`
-	Attrs                []string `mapstructure:"attrs"`
+	Attrs                string   `mapstructure:"attrs"`
 	Controls             []string `mapstructure:"controls"`
 	Reporter             []string `mapstructure:"reporter"`
 	User                 string   `mapstructure:"user"`
@@ -114,6 +114,14 @@ func (p *Provisioner) Prepare(raws ...interface{}) error {
 		}
 	} else {
 		p.config.LocalPort = "0"
+	}
+
+	if len(p.config.Attrs) > 0 {
+		err = validateAttrsConfig(p.config.Attrs)
+		if err != nil {
+			log.Println(p.config.Attrs, "does not exist")
+			errs = packer.MultiErrorAppend(errs, err)
+		}
 	}
 
 	if len(p.config.ProfilesPath) > 0 {
@@ -279,6 +287,11 @@ func (p *Provisioner) executeInspec(ui packer.Ui, comm packer.Communicator, priv
 	if len(p.config.ProfilesPath) > 0 {
 		args = append(args, "--profiles-path", p.config.ProfilesPath)
 	}
+	if len(p.config.Attrs) > 0 {
+		attrs, _ := filepath.Abs(p.config.Attrs)
+		args = append(args, "--attrs", attrs)
+	}
+
 	args = append(args, p.config.ExtraArguments...)
 
 	// -t ssh://user@host:port
@@ -345,6 +358,14 @@ func validateFileConfig(name string, config string, req bool) error {
 		return fmt.Errorf("%s: %s is invalid: %s", config, name, err)
 	} else if info.IsDir() {
 		return fmt.Errorf("%s: %s must point to a file", config, name)
+	}
+	return nil
+}
+
+func validateAttrsConfig(name string) error {
+	_, err := os.Stat(name)
+	if os.IsNotExist(err) {
+		return fmt.Errorf("attrs: %s does not exist: %s", name, err)
 	}
 	return nil
 }

@@ -267,6 +267,51 @@ func TestProvisionerPrepare_LocalPort(t *testing.T) {
 	}
 }
 
+func TestProvisionerPrepare_Attrs(t *testing.T) {
+	var p Provisioner
+	config := testConfig(t)
+	defer os.Remove(config["command"].(string))
+
+	hostkey_file, err := ioutil.TempFile("", "hostkey")
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+	defer os.Remove(hostkey_file.Name())
+
+	publickey_file, err := ioutil.TempFile("", "publickey")
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+	defer os.Remove(publickey_file.Name())
+
+	test_file, err := ioutil.TempFile("", "example")
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+	defer os.Remove(test_file.Name())
+
+	config["ssh_host_key_file"] = hostkey_file.Name()
+	config["ssh_authorized_key_file"] = publickey_file.Name()
+	config["test_path"] = test_file.Name()
+
+	// Test passing an Attrs file
+	attributes_file, err := ioutil.TempFile("", "attributes")
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+	defer os.Remove(attributes_file.Name())
+
+	config["attrs"] = attributes_file.Name()
+	err = p.Prepare(config)
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+
+	if p.config.Attrs != attributes_file.Name() {
+		t.Errorf("expected Attrs to be set")
+	}
+}
+
 func TestInspecGetVersion(t *testing.T) {
 	if os.Getenv("PACKER_ACC") == "" {
 		t.Skip("This test is only run with PACKER_ACC=1 and it requires InSpec to be installed")

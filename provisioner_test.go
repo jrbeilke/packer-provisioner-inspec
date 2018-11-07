@@ -301,13 +301,13 @@ func TestProvisionerPrepare_Attrs(t *testing.T) {
 	}
 	defer os.Remove(attributes_file.Name())
 
-	config["attrs"] = attributes_file.Name()
+	config["attrs"] = []string{attributes_file.Name()}
 	err = p.Prepare(config)
 	if err != nil {
 		t.Fatalf("err: %s", err)
 	}
 
-	if p.config.Attrs != attributes_file.Name() {
+	if p.config.Attrs[0] != attributes_file.Name() {
 		t.Errorf("expected Attrs to be set")
 	}
 }

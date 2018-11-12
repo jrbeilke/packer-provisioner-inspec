@@ -286,9 +286,11 @@ func (p *Provisioner) executeInspec(ui packer.Ui, comm packer.Communicator, priv
 	if len(privKeyFile) > 0 {
 		args = append(args, "-i", privKeyFile)
 	}
+
 	if len(p.config.ProfilesPath) > 0 {
 		args = append(args, "--profiles-path", p.config.ProfilesPath)
 	}
+
 	if len(p.config.Attrs) > 0 {
 		var attr_args []string
 		attr_args = append(attr_args, "--attrs")
@@ -298,7 +300,7 @@ func (p *Provisioner) executeInspec(ui packer.Ui, comm packer.Communicator, priv
 			attr_args = append(attr_args, attr_path)
 		}
 
-		args = append(args, strings.Join(attr_args, " "))
+		args = append(args, attr_args...)
 	}
 
 	args = append(args, p.config.ExtraArguments...)

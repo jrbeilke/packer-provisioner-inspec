@@ -295,7 +295,7 @@ func (p *Provisioner) executeInspec(ui packer.Ui, comm packer.Communicator, priv
 
 		for _, attr := range p.config.Attrs {
 			attr_path, _ := filepath.Abs(attr)
-			attr_args = append(args, attr_path)
+			attr_args = append(attr_args, attr_path)
 		}
 
 		args = append(args, strings.Join(attr_args, " "))

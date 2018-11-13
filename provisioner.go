@@ -344,7 +344,6 @@ func (p *Provisioner) executeInspec(ui packer.Ui, comm packer.Communicator, priv
 			// an ExitStatus() method with the same signature.
 			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
 				exitStatus := status.ExitStatus()
-				log.Printf("[DEBUG] Exit Status: %d", exitStatus)
 				// Check exit code against allowed codes (likely just 0)
 				validExitCode := false
 				for _, v := range p.config.ValidExitCodes {
@@ -359,8 +358,7 @@ func (p *Provisioner) executeInspec(ui packer.Ui, comm packer.Communicator, priv
 				}
 			}
 		} else {
-			log.Fatalf("cmd.Wait: %v", err)
-			return err
+			return fmt.Errorf("Unable to get exit status: %s", err)
 		}
 	}
 

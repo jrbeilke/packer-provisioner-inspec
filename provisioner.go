@@ -116,6 +116,16 @@ func (p *Provisioner) Prepare(raws ...interface{}) error {
 		p.config.LocalPort = "0"
 	}
 
+	if len(p.config.Attrs) > 0 {
+		for _, attr := range p.config.Attrs {
+			err = validateAttrsConfig(attr)
+			if err != nil {
+				log.Println(attr, "does not exist")
+				errs = packer.MultiErrorAppend(errs, err)
+			}
+		}
+	}
+
 	if len(p.config.ProfilesPath) > 0 {
 		err = validateProfilesPathConfig(p.config.ProfilesPath)
 		if err != nil {
@@ -276,9 +286,23 @@ func (p *Provisioner) executeInspec(ui packer.Ui, comm packer.Communicator, priv
 	if len(privKeyFile) > 0 {
 		args = append(args, "-i", privKeyFile)
 	}
+
 	if len(p.config.ProfilesPath) > 0 {
 		args = append(args, "--profiles-path", p.config.ProfilesPath)
 	}
+
+	if len(p.config.Attrs) > 0 {
+		var attr_args []string
+		attr_args = append(attr_args, "--attrs")
+
+		for _, attr := range p.config.Attrs {
+			attr_path, _ := filepath.Abs(attr)
+			attr_args = append(attr_args, attr_path)
+		}
+
+		args = append(args, attr_args...)
+	}
+
 	args = append(args, p.config.ExtraArguments...)
 
 	// -t ssh://user@host:port
@@ -345,6 +369,14 @@ func validateFileConfig(name string, config string, req bool) error {
 		return fmt.Errorf("%s: %s is invalid: %s", config, name, err)
 	} else if info.IsDir() {
 		return fmt.Errorf("%s: %s must point to a file", config, name)
+	}
+	return nil
+}
+
+func validateAttrsConfig(name string) error {
+	_, err := os.Stat(name)
+	if os.IsNotExist(err) {
+		return fmt.Errorf("attrs: %s does not exist: %s", name, err)
 	}
 	return nil
 }

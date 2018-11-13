@@ -21,6 +21,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"syscall"
 	"unicode"
 
 	"golang.org/x/crypto/ssh"
@@ -53,6 +54,7 @@ type Config struct {
 	SSHAuthorizedKeyFile string   `mapstructure:"ssh_authorized_key_file"`
 	ProfilesPath         string   `mapstructure:"profiles_path"`
 	JsonConfig           string   `mapstructure:"json_config"`
+	ValidExitCodes       []int    `mapstructure:"valid_exit_codes"`
 }
 
 type Provisioner struct {
@@ -132,8 +134,13 @@ func (p *Provisioner) Prepare(raws ...interface{}) error {
 			p.config.User = usr.Username
 		}
 	}
+
 	if p.config.User == "" {
 		errs = packer.MultiErrorAppend(errs, fmt.Errorf("user: could not determine current user from environment."))
+	}
+
+	if p.config.ValidExitCodes == nil {
+		p.config.ValidExitCodes = []int{0}
 	}
 
 	if errs != nil && len(errs.Errors) > 0 {
@@ -326,9 +333,35 @@ func (p *Provisioner) executeInspec(ui packer.Ui, comm packer.Communicator, priv
 		return err
 	}
 	wg.Wait()
-	err = cmd.Wait()
-	if err != nil {
-		return fmt.Errorf("Non-zero exit status: %s", err)
+
+	if err := cmd.Wait(); err != nil {
+		if exiterr, ok := err.(*exec.ExitError); ok {
+			// The program has exited with an exit code != 0
+
+			// This works on both Unix and Windows. Although package
+			// syscall is generally platform dependent, WaitStatus is
+			// defined for both Unix and Windows and in both cases has
+			// an ExitStatus() method with the same signature.
+			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+				exitStatus := status.ExitStatus()
+				log.Printf("[DEBUG] Exit Status: %d", exitStatus)
+				// Check exit code against allowed codes (likely just 0)
+				validExitCode := false
+				for _, v := range p.config.ValidExitCodes {
+					if exitStatus == v {
+						validExitCode = true
+					}
+				}
+				if !validExitCode {
+					return fmt.Errorf(
+						"Inspec exited with non-zero exit status: %d. Allowed exit codes are: %v",
+						exitStatus, p.config.ValidExitCodes)
+				}
+			}
+		} else {
+			log.Fatalf("cmd.Wait: %v", err)
+			return err
+		}
 	}
 
 	return nil

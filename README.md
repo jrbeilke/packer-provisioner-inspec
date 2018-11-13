@@ -60,3 +60,4 @@ optional parameters
   `/usr/lib/sftp-server -e`.
 - `ssh_host_key_file` - The SSH key that will be used to run the SSH server to which InSpec connects.
 - `ssh_authorized_key_file` - The SSH public key of the InSpec `ssh_user`.
+- `valid_exit_codes` (array of ints) - An array of valid exit codes to accept.
